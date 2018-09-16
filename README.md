@@ -15,5 +15,7 @@ Other good things to know are "git pull" which updates your repo to whatever is 
 To add or commit a file here are the steps:
 
 "git add ." This adds all the files with changes and preps them to be committed.
+
 "git commit -m "some message of your choosing" " The message goes along with the push and helps identify what you did with each commit.
+
 "git push" this pushes all changes to the git server. Let your partner know when you have pushed so they can pull down your changes.
