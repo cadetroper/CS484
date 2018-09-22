@@ -1,6 +1,6 @@
 from socket import *
 from datetime import *
-serverPort = 13000
+serverPort = 8080
 serverSocket = socket(AF_INET, SOCK_STREAM)
 serverSocket.bind(('', serverPort))
 serverSocket.listen(1)
@@ -20,7 +20,10 @@ while True:
 	    # Stores responses
 
 	    #Placeholder data. TODO: Make it read a file
-	    data = "<p>Sample sentence.</p>"
+	    with open('test1.html') as f:
+	    	data = f.read()
+		
+
 
 	    # gets current date to send with HTML response and formats
 	    curDate = datetime.strftime(datetime.today(),"%a, %d %b %Y %H:%M:%S %Z")
@@ -36,5 +39,6 @@ while True:
 
 	    # Consolidates message. TODO: make a few shorter lines insead of this one big line. TODO: Have options for 404 and 301 status errors
 	    okMSG = "HTTP/1.1 200 OK<cr><lf>Date: " + curDate + "<cr><lf>Server: Windows Python <cr><lf>Last-Modified: " + lastmod + "<cr><lf>Content-Length: " +str(length) + "<cr><lf>Content-Type: " + cType + "<cr><lf><cr><lf>" + data 
+    print(okMSG)
     connectionSocket.send(okMSG.encode())
     connectionSocket.close()
