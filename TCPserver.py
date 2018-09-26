@@ -31,7 +31,10 @@ while True:
         #CType placeholder, TODO: make it vary based on type of file requested
         acceptlangs = lines[6].split(" ")
         # cType = acceptlangs[1]
-        cType = 'text/html' #https://emalsha.wordpress.com/2016/11/24/how-create-http-server-using-python-socket-part-ii/
+        cType = 'text/html'
+
+        #https://emalsha.wordpress.com/2016/11/24/how-create-http-server-using-python-socket-part-ii/
+        # "How to Create HTTP Server Using Python Socket Part II" Used to find out why files weren't rendering. Realized that we could use the file extention to set content type var. West Point, NY. 26 SEP 18.
         extn =  parts[1].split('.')[1]
         if (extn == "jpeg"): cType = 'image/jpg'
         elif (extn == "jpg"): cType = 'image/jpg'
@@ -49,8 +52,6 @@ while True:
             with (open(filename[1:], 'rb')) as f:
                 data = f.read()
                 # Last modified placeholder,Make it actually update. NOTE: CPT Chamberlain told me he doesn't care if we actually make the last modified work.
-                # SOURCE: https://stackoverflow.com/questions/39359245/from-stat-st-mtime-to-datetimef
-                # filestat = datetime.fromtimestamp(path.getmtime(filename))
                 htmlmessage="200 OK"
 
         except IOError as e:
