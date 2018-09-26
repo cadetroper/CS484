@@ -40,7 +40,6 @@ while True:
 
         #vars to sen
         filename = lines[0].split(" ")[1]
-        print(filename)
         #test line to see if it sends something
         # filename = "test1.html"
 
@@ -49,7 +48,7 @@ while True:
         try:
             with (open(filename[1:], 'rb')) as f:
                 data = f.read()
-                # Last modified placeholder, TODO: Make it actually update
+                # Last modified placeholder,Make it actually update. NOTE: CPT Chamberlain told me he doesn't care if we actually make the last modified work.
                 # SOURCE: https://stackoverflow.com/questions/39359245/from-stat-st-mtime-to-datetimef
                 # filestat = datetime.fromtimestamp(path.getmtime(filename))
                 htmlmessage="200 OK"
@@ -61,7 +60,9 @@ while True:
             foundit = False
             htmlmessage = "\n\n\n\nIf this is still the message then it means that it did not execute the for or if statements on lines 54 & 59\n\n\n"
             for line in movedinfolines:
-                if  filename in line:
+                print("looking for file")
+                if  filename[1:] in line:
+                    #  TODO This only kinda works. MAybe we need to make it return a custom HTML 301 error to display? Try looking up for localhost:8080\values\default1.css. Should return not found (Based on my artificial moved file) but does something weird
                     htmlmessage = "301 Moved"
                     newlocation = line.split(" ")[1]
                     foundit = True
@@ -70,10 +71,13 @@ while True:
 
         length=len(data)
 
-        # Consolidates message. TODO: make a few shorter lines insead of this one big line. 
-        # okMSG = "HTTP/1.1 "+htmlmessage+"\n<cr><lf>Date: " + curDate + "<cr><lf>\nServer: Windows Python<cr><lf>\nLast-Modified: " + lastmod + "<cr><lf>\nContent-Length: " +str(length) + "<cr><lf>\nContent-Type: " + cType + "<cr><lf><cr><lf>" + data 
+
+        # TODO add indicator that server doesn't accept persistent connections. Just another header line.
         okMSG = "HTTP/1.1 "+htmlmessage+"\r\nDate: " + curDate + "\r\nServer: Windows Python\r\nLast-Modified: " + lastmod + "<cr><lf>Content-Length: " +str(length) + "\r\nContent-Type: " + cType + "\r\n\r\n"
-        finalData = bytearray(okMSG, 'utf-8')+data
+        
+        if(data!=""): finalData = bytearray(okMSG, 'utf-8')+data
+        else: finalData =  bytearray(okMSG, 'utf-8')
+
     print(okMSG)
     connectionSocket.send(finalData)
     connectionSocket.close()
