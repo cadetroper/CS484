@@ -12,12 +12,10 @@ while True:
     connectionSocket, addr = serverSocket.accept()
     message = connectionSocket.recv(1024).decode()
     if message[0:3]=="GET":
-        print(message)
         parts = []
         parts = message.split(" ")
         lines = []
         lines = message.split("\n")
-        print(parts)
 
         #TODO store important parts that we need for processing flow, like file path, etc
         # Stores responses
@@ -63,7 +61,6 @@ while True:
             foundit = False
             htmlmessage = "\n\n\n\nIf this is still the message then it means that it did not execute the for or if statements on lines 54 & 59\n\n\n"
             for line in movedinfolines:
-                print("looking for file")
                 if  filename[1:] in line:
                     #  TODO This only kinda works. MAybe we need to make it return a custom HTML 301 error to display? Try looking up for localhost:8080\values\default1.css. Should return not found (Based on my artificial moved file) but does something weird
                     htmlmessage = "301 Moved"
@@ -81,6 +78,5 @@ while True:
         if(data!=""): finalData = bytearray(okMSG, 'utf-8')+data
         else: finalData =  bytearray(okMSG, 'utf-8')
 
-    print(okMSG)
     connectionSocket.send(finalData)
     connectionSocket.close()
