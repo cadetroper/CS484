@@ -23,6 +23,7 @@ while True:
         # Stores responses
 
         # gets current date to send with HTML response and formats
+        # https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
         curDate = datetime.strftime(datetime.today(),"%a, %d %b %Y %H:%M:%S %Z")
 
         # creating variable, setting later to actual file
@@ -35,14 +36,15 @@ while True:
 
         #https://emalsha.wordpress.com/2016/11/24/how-create-http-server-using-python-socket-part-ii/
         # "How to Create HTTP Server Using Python Socket Part II" Used to find out why files weren't rendering. Realized that we could use the file extention to set content type var. West Point, NY. 26 SEP 18.
-        extn =  parts[1].split('.')[1]
+        filename = lines[0].split(" ")[1]
+        extn =  filename.split('.')[1]
         if (extn == "jpeg"): cType = 'image/jpg'
         elif (extn == "jpg"): cType = 'image/jpg'
         elif (extn=="css"): cType = 'text/css'
 
 
         #vars to sen
-        filename = lines[0].split(" ")[1]
+       
         #test line to see if it sends something
         # filename = "test1.html"
 
@@ -73,9 +75,9 @@ while True:
         length=len(data)
 
 
-        # TODO add indicator that server doesn't accept persistent connections. Just another header line.
-        okMSG = "HTTP/1.1 "+htmlmessage+"\r\nDate: " + curDate + "\r\nServer: Windows Python\r\nLast-Modified: " + lastmod + "<cr><lf>Content-Length: " +str(length) + "\r\nContent-Type: " + cType + "\r\n\r\n"
-        
+        okMSG = "HTTP/1.1 "+htmlmessage+" \r\nConnection: close" +"\r\nDate: " + curDate + "\r\nServer: Windows Python\r\nLast-Modified: " + lastmod + "\r\nContent-Length: " +str(length)
+        if (htmlmessage=="301 Moved"): okMSG=okMSG+ "\r\nLocation:"+ newlocation
+        okMSG=okMSG+ "\r\nContent-Type: " + cType + "\r\n\r\n"
         if(data!=""): finalData = bytearray(okMSG, 'utf-8')+data
         else: finalData =  bytearray(okMSG, 'utf-8')
 
