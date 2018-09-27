@@ -16,8 +16,6 @@ while True:
         parts = message.split(" ")
         lines = []
         lines = message.split("\n")
-
-        #TODO store important parts that we need for processing flow, like file path, etc
         # Stores responses
 
         # gets current date to send with HTML response and formats
@@ -62,7 +60,6 @@ while True:
             htmlmessage = "\n\n\n\nIf this is still the message then it means that it did not execute the for or if statements on lines 54 & 59\n\n\n"
             for line in movedinfolines:
                 if  filename[1:] in line:
-                    #  TODO This only kinda works. MAybe we need to make it return a custom HTML 301 error to display? Try looking up for localhost:8080\values\default1.css. Should return not found (Based on my artificial moved file) but does something weird
                     htmlmessage = "301 Moved"
                     newlocation = line.split(" ")[1]
                     foundit = True
