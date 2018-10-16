@@ -1,6 +1,15 @@
 # CS484
-Project work with Bobby
-This is going to be the respository for all of our code that we need to share.
+Project #1 CDT Norwood and Roper
+
+How to run code:
+1. Pull code down from github/download from email and ensure python is downloaded onto computer.
+2. Launch a command line and move into the proper directory (the folder this file is in)
+3. Run the server with: py TCPserver.py
+4. Depending on the port selected, travel to (http://IP of server:Port# (currently 8080)/it105.html) in a browser
+5. Enjoy the picture of the koala.
+
+
+How to use git:
 
 To begin, open the git bash in the folder you wish the repository to go into.
 Also go to the main page of the repository website (on Git) it should be the page you are looking at now.
