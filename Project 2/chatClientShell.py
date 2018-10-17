@@ -25,6 +25,16 @@ def readFromServer(clientSocket):
 
 serverName = 'localhost'
 serverPort = 9000
+clientSocket = socket(AF_INET, SOCK_STREAM)
+clientSocket.connect((serverName, serverPort))
+
+
+
+
+username = input("Enter your username: ")
+usermessage = username + " has entered the chat!\n"
+send(usermessage.encode()) #This should broadcast the user name to the entire server.
+
 
 # YOUR CODE STARTS HERE
 
