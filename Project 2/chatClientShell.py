@@ -36,6 +36,7 @@ usermessage = username + " has entered the chat!\n"
 send(usermessage.encode()) #This should broadcast the user name to the entire server.
 
 
+
 # YOUR CODE STARTS HERE
 
 # Rough algorithm:
@@ -43,6 +44,11 @@ send(usermessage.encode()) #This should broadcast the user name to the entire se
 #   2. Connect to server using client socket
 #   3. Create a reader thread object
 #	 	Threading tips: https://pymotw.com/2/threading/
+
+t = threading.Thread(target=readFromServer, args=(clientSocket, ))
+t.start()
+
+
 #   4. Start reader thread, which will loop waiting for data from server and print it out
 #   5. Loop (need an exit strategy)
 #      a. Receive input from user
