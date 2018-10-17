@@ -33,8 +33,8 @@ def readFromServer(clientSocket):
     # filters blocked names
     splitMessage = message.split(":")
     flag2 = 1
-    for a in splitMessage:
-        if splitMessage[0]==a: flag2 = 0
+    for a in blockedNames:
+        if (splitMessage[0]==a): flag2 = 0
     if (flag2==1):
         print(message)
 
@@ -95,7 +95,7 @@ while (flag == 1):
         fixWords = outMessage.split(" ")
         newMessage = ""
         for w in fixWords:
-            if (w.contains("Thayer") or w.contains("Washington") or w.contains("Eisenhower") or w.contains("Lincoln")):
+            if ("Thayer" in w or "Washington" in w or "Eisenhower" in w or "Lincoln" in w):
                 w="****"
             newMessage+=" "
             newMessage+=w
