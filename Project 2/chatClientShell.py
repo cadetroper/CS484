@@ -2,6 +2,7 @@
 
 from socket import *
 import threading
+from datetime import *
 
 """
 chatClientShell.py
@@ -16,6 +17,7 @@ helpMessage = """
     'block' block a user \n
     'unblock' unblock a user \n
     'change username' change your username \n
+    'quit' leave the chat\n
 """
 
 
@@ -29,6 +31,7 @@ def readFromServer(clientSocket):
     message = clientSocket.recv(1024)
 
     message = message.decode()
+    curDate = datetime.strftime(datetime.today(),"%a, %d %b %Y %H:%M:%S %Z")
 
     # filters blocked names
     splitMessage = message.split(":")
@@ -36,7 +39,7 @@ def readFromServer(clientSocket):
     for a in blockedNames:
         if (splitMessage[0]==a): flag2 = 0
     if (flag2==1):
-        print(message)
+        print(curDate + message)
 
 
 
@@ -87,7 +90,10 @@ while (flag == 1):
         blockedNames+=input("Enter username you would like to block: ")
     elif (outMessage=="unblock"):
         blockedNames-=input("Enter username you would like to unblock")   
-
+    elif (outMessage=="quit"):
+        message = username+" has left the chat."
+        clientSocket.send(message.encode())
+        exit()
 
 
 
