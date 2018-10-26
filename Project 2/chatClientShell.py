@@ -3,6 +3,7 @@
 from socket import *
 import threading
 from datetime import *
+import sys
 
 """
 chatClientShell.py
@@ -13,11 +14,11 @@ Description:  Sample chat client for CS484 programming assignment
 blockedNames = []
 helpMessage = """
     Possible commands: \n
-    'help' see these commands again \n
-    'block' block a user \n
-    'unblock' unblock a user \n
-    'change username' change your username \n
-    'quit' leave the chat\n
+    #user <handle>: changes a user handle\n
+    #block <user>: blocks this user's message\n
+    #unblock <user>: unblocks this user's message\n
+    #help: shows this screen\n
+    #bye: quits chat program\n
 """
 
 
@@ -29,6 +30,7 @@ def readFromServer(clientSocket):
     # TODO: add timestamp
     # TODO check blocked usernames
     message = clientSocket.recv(1024)
+    print(blockedNames)
 
     message = message.decode()
     curDate = datetime.strftime(datetime.today(),"%a, %d %b %Y %H:%M:%S %Z")
@@ -78,22 +80,26 @@ t.start()
 flag = 1
 while (flag == 1):
     outMessage = input()
-    if (outMessage=="help"):
-
+    if (outMessage[:5]=="#help"):
+        print(outMessage[:5])
         print(helpMessage)
-    elif (outMessage=="change username"):
-        username2=input("Enter new username: ")
+    elif (outMessage[:5]=="#user"):
+        username2=outMessage[6:]
         message = username+ " has changed their name to " + username2
         username=username2
         clientSocket.send(message.encode())
-    elif (outMessage=="block"):
-        blockedNames+=input("Enter username you would like to block: ")
-    elif (outMessage=="unblock"):
-        blockedNames-=input("Enter username you would like to unblock")   
-    elif (outMessage=="quit"):
+    elif (outMessage[:6]=="#block"):
+        print(outMessage[7:])
+        c = ""
+        blockedNames+=c.join(outMessage[7:])
+    elif (outMessage[:7]=="#unblock"):
+        c = ""
+        blockedNames-=c.join(outMessage[8:])
+    elif (outMessage[:4]=="#bye"):
         message = username+" has left the chat."
         clientSocket.send(message.encode())
-        exit()
+        sys.exit()
+        # TODO Quit only kind of kills the program. Need something besides exit.
 
 
 
@@ -101,7 +107,8 @@ while (flag == 1):
         fixWords = outMessage.split(" ")
         newMessage = ""
         for w in fixWords:
-            if ("Thayer" in w or "Washington" in w or "Eisenhower" in w or "Lincoln" in w):
+            a = w.lower()
+            if ("thayer" in a or "washington" in a or "eisenhower" in a or "lincoln" in a):
                 w="****"
             newMessage+=" "
             newMessage+=w
