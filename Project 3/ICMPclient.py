@@ -1,4 +1,5 @@
 from socket import *
+import base84
 
 serverName = 'localhost'
 serverPort = 8080
@@ -6,8 +7,22 @@ serverPort = 8080
 clientSocket = socket(AF_INET, SOCK_STREAM)
 
 clientSocket.connect((serverName, serverPort))
-message = input('Input lowercase sentence: ')
-clientSocket.send(message.encode())
+message = input('Input Secret Message: ')
+message64 = base64.b64encode(bytes(message, 'utf-8')) # obfuscates message
+
+# puts data in bytes
+data = bytearray()
+data.extend(message64)
+
+identifer = '98F3'
+seqNumber = '3434'
+packetNC = bytearray.fromhex('08000000' + identifer + seqNumber)
+packetNC += data # appends data to header 
+
+# TODO: Calculate checksum of packet NC
+# TODO: Generate new packet with checksum
+
+clientSocket.send(packetNC)
 modifiedMessage = clientSocket.recv(1024).decode()
 print('From Server: ', modifiedMessage)
 clientSocket.close()
@@ -30,5 +45,5 @@ clientSocket.close()
  # Total header size is 8 bytes. 
 
  # how to calculate ICMP checksum: https://osqa-ask.wireshark.org/questions/11061/icmp-checksum
- 
+
  # 
