@@ -1,6 +1,8 @@
 from socket import *
+import base64
 
-serverPort = 13000
+
+serverPort = 8080
 serverSocket = socket(AF_INET, SOCK_STREAM)
 serverSocket.bind(('', serverPort))
 serverSocket.listen(5)
@@ -8,14 +10,10 @@ serverSocket.listen(5)
 print("The server is ready to receive")
 
 while True:
-	print("hereAlso")
     connectionSocket, addr = serverSocket.accept()
-    print("here")
     request = connectionSocket.recv(1024).decode()
-    # where we put stuff to handle GET
-    print(request)
-    # print(request)
 
-    #Sent stufff
-    connectionSocket.send("this is a test".encode())
-    connectionSocket.close()
+    data = request[10:]
+    message = base64.b64decode(data.encode())
+
+    print(message.decode())

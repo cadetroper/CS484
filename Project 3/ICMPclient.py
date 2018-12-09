@@ -1,31 +1,62 @@
 from socket import *
-import base84
+import base64
 
 serverName = 'localhost'
 serverPort = 8080
 
-clientSocket = socket(AF_INET, SOCK_STREAM)
 
-clientSocket.connect((serverName, serverPort))
-message = input('Input Secret Message: ')
-message64 = base64.b64encode(bytes(message, 'utf-8')) # obfuscates message
+# https://stackoverflow.com/questions/20905770/checksum-icmp-python-with-wireshark
+def carry_around_add(a,b):
+  c = a + b
+  return (c & 0xffff) + (c>>16)
 
-# puts data in bytes
-data = bytearray()
-data.extend(message64)
+def checksum(msg):
+  chksm = 0
+  for i in range(0, len(msg), 2):
+    w = ord(msg[i])+ (ord(msg[i+1]) << 8)
+    chksm = carry_around_add(chksm, w)
+  return ~chksm & 0xffff
 
-identifer = '98F3'
-seqNumber = '3434'
-packetNC = bytearray.fromhex('08000000' + identifer + seqNumber)
-packetNC += data # appends data to header 
+def sendSecret(message):
+    clientSocket = socket(AF_INET, SOCK_STREAM)
 
-# TODO: Calculate checksum of packet NC
-# TODO: Generate new packet with checksum
+    clientSocket.connect((serverName, serverPort))
 
-clientSocket.send(packetNC)
-modifiedMessage = clientSocket.recv(1024).decode()
-print('From Server: ', modifiedMessage)
-clientSocket.close()
+    message64 = base64.b64encode(message.encode()) # obfuscates message
+    message = message64.decode()
+
+
+    identifer = '\x98\xF3'
+    seqNumber = '\x34\x34'
+    packetNC = '\x08\x00\x00\x00' + identifer + seqNumber
+    # packetNC = packetNC +  message64 # appends data to header 
+    packetNC = packetNC + message  # appends data to header 
+    # https://www.mkyong.com/python/python-3-convert-string-to-bytes/
+    # rememinded to encode b84 string
+
+    csum = checksum(packetNC)
+
+    ssum = '{:x}'.format(csum)
+
+    # https://stackoverflow.com/questions/20905770/checksum-icmp-python-with-wireshark
+
+
+
+    # TODO: Calculate checksum of packet NChttps://stackoverflow.com/questions/20247551/icmp-echo-checksum
+    # essentially this involves splitting header and data into 16 bit words, getting the sum, 
+    # then taking 1s complement. Insert this to checksum field. Can do using a loop through the 
+    # Byte array, probably?
+
+    # TODO: Generate new packet with checksum
+
+    finalPacket = '\x08\x00' + ssum + identifer + seqNumber + message
+
+    clientSocket.send(finalPacket.encode())
+    clientSocket.close()
+
+while True:
+  message = input('input secret message: ')
+  sendSecret(message)
 
 # What ICMP Packet looks like https://stackoverflow.com/questions/34614893/how-is-an-icmp-packet-constructed-in-python
    # 0                   1                   2                   3
