@@ -1,42 +1,59 @@
 from socket import *
 import base64
+import struct
 
-serverName = 'localhost'
+serverName = '10.6.0.119'
 serverPort = 8080
 
 
 # https://stackoverflow.com/questions/20905770/checksum-icmp-python-with-wireshark
-def carry_around_add(a,b):
-  c = a + b
-  return (c & 0xffff) + (c>>16)
+# # def carry_around_add(a,b):
+#   c = a + b
+#   return (c & 0xffff) + (c>>16)
 
+seqNumber = 4
+idn = 45
 def checksum(msg):
-  chksm = 0
+  # headersum = bin(8 << 4) + bin(seqNumber) + bin(idn)
+  headersum = 0
+
   for i in range(0, len(msg), 2):
-    w = ord(msg[i])+ (ord(msg[i+1]) << 8)
-    chksm = carry_around_add(chksm, w)
-  return ~chksm & 0xffff
+    w = msg[i]+ (msg[i+1]<< 8)
+    # headersum = carry_around_add(headersum, w)
+    headersum = headersum + w
+    headersum = headersum + (headersum >> 16)
+    headersum =  ~headersum & 0xffff
+    return headersum
 
 def sendSecret(message):
-    clientSocket = socket(AF_INET, SOCK_STREAM)
+    clientSocket = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)
+
 
     clientSocket.connect((serverName, serverPort))
 
     message64 = base64.b64encode(message.encode()) # obfuscates message
     message = message64.decode()
+    print(message)
+    header = struct.pack("bbHHh", 8, 0, 0, 3, 1)
+    print(header)
+    csum = checksum(header + message.encode())
+
+    newHeader = struct.pack("bbHHh", 8, 0, csum, 3, 1)
 
 
-    identifer = '\x98\xF3'
-    seqNumber = '\x34\x34'
-    packetNC = '\x08\x00\x00\x00' + identifer + seqNumber
+
+    # identifer = '\x98\xF3'
+    # seqNumber = '\x34\x34'
+    # packetNC = '\x08\x00\x00\x00' + identifer + seqNumber
     # packetNC = packetNC +  message64 # appends data to header 
-    packetNC = packetNC + message  # appends data to header 
+    packetNC = newHeader + message.encode()  # appends data to header 
     # https://www.mkyong.com/python/python-3-convert-string-to-bytes/
     # rememinded to encode b84 string
 
-    csum = checksum(packetNC)
-
-    ssum = '{:x}'.format(csum)
+    # csum = checksum(packetNC)
+    # print(csum)
+    # ssum = '{:x}'.format(csum)
+    # print(ssum)
 
     # https://stackoverflow.com/questions/20905770/checksum-icmp-python-with-wireshark
 
@@ -49,9 +66,11 @@ def sendSecret(message):
 
     # TODO: Generate new packet with checksum
 
-    finalPacket = '\x08\x00' + ssum + identifer + seqNumber + message
+    # finalPacket = '\x08\x00' + ssum + '\x33\x33' + seqNumber + message
+  
 
-    clientSocket.send(finalPacket.encode())
+    print(packetNC)
+    clientSocket.send(packetNC)
     clientSocket.close()
 
 while True:
