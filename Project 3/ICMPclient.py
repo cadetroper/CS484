@@ -2,7 +2,7 @@ from socket import *
 import base64
 import struct
 
-serverName = '10.6.0.119'
+serverName = 'localhost'
 serverPort = 8080
 
 
@@ -21,9 +21,9 @@ def checksum(msg):
     w = msg[i]+ (msg[i+1]<< 8)
     # headersum = carry_around_add(headersum, w)
     headersum = headersum + w
-    headersum = headersum + (headersum >> 16)
-    headersum =  ~headersum & 0xffff
-    return headersum
+  headersum = headersum + (headersum >> 16)
+  headersum =  ~headersum & 0xffff
+  return headersum
 
 def sendSecret(message):
     clientSocket = socket(AF_INET, SOCK_RAW, IPPROTO_ICMP)

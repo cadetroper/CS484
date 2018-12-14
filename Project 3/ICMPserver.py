@@ -14,7 +14,7 @@ while True:
 #    request = connectionSocket.recv(1024).decode()
     request, addr = serverSocket.recvfrom(1024)
 
-    data = request.decode()[10:]
-    message = base64.b64decode(data.encode())
+    data = request[10:]
+    message = base64.b64decode(data)
 
     print(message.decode())
